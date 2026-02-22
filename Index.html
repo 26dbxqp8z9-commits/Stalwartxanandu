@@ -1,0 +1,483 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  Menu, X, Dumbbell, Activity, User, MapPin, 
+  Phone, Mail, ArrowRight, CheckCircle, ChevronRight, 
+  Leaf, Zap, Clock, ShieldCheck
+} from 'lucide-react';
+
+// --- DATA ---
+const OFFERINGS = [
+  { title: "Personal Training", desc: "One-on-one guidance with customized plans to reach your absolute peak.", icon: User },
+  { title: "Strength Training", desc: "Build strength, tone muscles, and improve endurance with precision.", icon: Dumbbell },
+  { title: "Cardio Workouts", desc: "Boost stamina, burn calories, and enhance your cardiovascular health.", icon: Activity },
+  { title: "Nutrition Guidance", desc: "Expert dietary advice engineered to fuel your demanding lifestyle.", icon: Leaf },
+];
+
+const CLASSES = [
+  { name: "Boxing Burnout", desc: "Ignite your energy, burn calories, and improve coordination with high-paced sessions.", img: "https://images.unsplash.com/photo-1549060279-7e168fcee0c2?q=80&w=1000&auto=format&fit=crop" },
+  { name: "Strength Training", desc: "Build lean muscle, increase power, and enhance overall strength with guided weights.", img: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=1000&auto=format&fit=crop" },
+  { name: "HIIT Xtreme", desc: "Push your limits with high-intensity intervals that burn fat and boost endurance rapidly.", img: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1000&auto=format&fit=crop" },
+  { name: "Yoga & Pilates", desc: "Find your center. Enhance flexibility, core strength, and mental clarity.", img: "https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?q=80&w=1000&auto=format&fit=crop" }
+];
+
+const EQUIPMENT = [
+  { name: "Treadmills", desc: "Premium running machines for warm-up & endurance.", img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1000&auto=format&fit=crop" },
+  { name: "Strength Machines", desc: "Target every muscle group with modern resistance tech.", img: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=1000&auto=format&fit=crop" },
+  { name: "Free Weights", desc: "Dumbbells, barbells & plates for absolute muscle building.", img: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?q=80&w=1000&auto=format&fit=crop" },
+  { name: "Functional Training", desc: "Kettlebells, battle ropes, and boxes for full-body workouts.", img: "https://images.unsplash.com/photo-1599058945522-28d584b6f4ff?q=80&w=1000&auto=format&fit=crop" }
+];
+
+const SCHEDULE = {
+  Monday: [
+    { time: "8:00 AM - 10:00 AM", name: "Yoga" },
+    { time: "9:00 AM - 11:00 AM", name: "Pilates" },
+    { time: "11:00 AM - 12:00 PM", name: "Cardio" },
+    { time: "12:00 PM - 01:00 PM", name: "CrossFit" },
+    { time: "01:00 PM - 02:00 PM", name: "Open Gym" },
+  ],
+  Tuesday: [
+    { time: "8:00 AM - 10:00 AM", name: "Cardio" },
+    { time: "9:00 AM - 11:00 AM", name: "Yoga" },
+    { time: "11:00 AM - 12:00 PM", name: "Pilates" },
+    { time: "12:00 PM - 01:00 PM", name: "Open Gym" },
+  ],
+  Wednesday: [
+    { time: "8:00 AM - 10:00 AM", name: "CrossFit" },
+    { time: "9:00 AM - 11:00 AM", name: "Yoga" },
+    { time: "11:00 AM - 12:00 PM", name: "Yoga" },
+    { time: "12:00 PM - 01:00 PM", name: "Yoga" },
+    { time: "01:00 PM - 02:00 PM", name: "Open Gym" },
+  ],
+  Thursday: [
+    { time: "8:00 AM - 10:00 AM", name: "Pilates" },
+    { time: "9:00 AM - 11:00 AM", name: "Strength" },
+    { time: "11:00 AM - 12:00 PM", name: "Yoga" },
+    { time: "12:00 PM - 01:00 PM", name: "Open Gym" },
+  ],
+  Friday: [
+    { time: "8:00 AM - 10:00 AM", name: "Pilates" },
+    { time: "9:00 AM - 11:00 AM", name: "CrossFit" },
+    { time: "11:00 AM - 12:00 PM", name: "Cardio" },
+    { time: "12:00 PM - 01:00 PM", name: "Open Gym" },
+  ],
+  Saturday: [
+    { time: "8:00 AM - 10:00 AM", name: "Yoga" },
+    { time: "9:00 AM - 11:00 AM", name: "Cardio" },
+    { time: "11:00 AM - 12:00 PM", name: "Pilates" },
+    { time: "12:00 PM - 01:00 PM", name: "Open Gym" },
+  ],
+  Sunday: [
+    { time: "8:00 AM - 10:00 AM", name: "Yoga" },
+    { time: "9:00 AM - 11:00 AM", name: "CrossFit" },
+    { time: "11:00 AM - 12:00 PM", name: "Yoga" },
+    { time: "12:00 PM - 01:00 PM", name: "Open Gym" },
+  ],
+};
+
+const TESTIMONIALS = [
+  { name: "Priya Sharma", text: "The trainers at Stalwart Xanadu helped me build strength and confidence. I feel healthier and more energetic every day. The workouts are incredibly effective." },
+  { name: "Karan Verma", text: "Their guidance and support helped me transform my body and mind. I feel stronger and more motivated every single day." },
+  { name: "Amit Desai", text: "I love the variety of classes and the professional trainers. They make every session engaging and effective. Highly recommend!" },
+  { name: "Sneha R.", text: "The trainers are extremely supportive and motivate you to push harder. My stamina has increased significantly since joining." },
+  { name: "Rahul Mehta", text: "Stalwart Xanadu transformed my fitness journey. The personalized guidance helped me achieve results I never thought possible." }
+];
+
+// --- COMPONENTS ---
+
+export default function App() {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeDay, setActiveDay] = useState("Monday");
+  const [showJoinModal, setShowJoinModal] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollTo = (id) => {
+    setMobileMenuOpen(false);
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <div className="bg-black text-white min-h-screen font-sans selection:bg-white selection:text-black">
+      
+      {/* --- NAVIGATION --- */}
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-black/70 backdrop-blur-xl border-b border-white/10' : 'bg-transparent'}`}>
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <div className="flex flex-col items-start cursor-pointer" onClick={() => scrollTo('home')}>
+            <span className="text-xl md:text-2xl font-bold tracking-tighter leading-none">STALWART XANADU</span>
+            <span className="text-[10px] md:text-xs text-zinc-400 tracking-widest uppercase mt-1">Temple of Fitness</span>
+          </div>
+
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-zinc-300">
+            <button onClick={() => scrollTo('about')} className="hover:text-white transition-colors">About</button>
+            <button onClick={() => scrollTo('programs')} className="hover:text-white transition-colors">Programs</button>
+            <button onClick={() => scrollTo('schedule')} className="hover:text-white transition-colors">Schedule</button>
+            <button onClick={() => scrollTo('contact')} className="hover:text-white transition-colors">Contact</button>
+          </div>
+
+          <div className="hidden md:flex">
+            <button 
+              onClick={() => setShowJoinModal(true)}
+              className="bg-white text-black px-6 py-2.5 rounded-full text-sm font-semibold hover:scale-105 transition-transform duration-300"
+            >
+              Join Now
+            </button>
+          </div>
+
+          {/* Mobile Toggle */}
+          <button className="md:hidden text-white p-2" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden absolute top-20 left-0 w-full bg-black/95 backdrop-blur-xl border-b border-white/10 p-6 flex flex-col space-y-6">
+            <button onClick={() => scrollTo('about')} className="text-lg font-medium text-left">About</button>
+            <button onClick={() => scrollTo('programs')} className="text-lg font-medium text-left">Programs</button>
+            <button onClick={() => scrollTo('schedule')} className="text-lg font-medium text-left">Schedule</button>
+            <button onClick={() => scrollTo('contact')} className="text-lg font-medium text-left">Contact</button>
+            <button 
+              onClick={() => { setShowJoinModal(true); setMobileMenuOpen(false); }}
+              className="bg-white text-black px-6 py-3 rounded-full text-base font-semibold w-full"
+            >
+              Join Now
+            </button>
+          </div>
+        )}
+      </nav>
+
+      {/* --- HERO SECTION --- */}
+      <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070&auto=format&fit=crop" 
+            alt="Gym Interior" 
+            className="w-full h-full object-cover opacity-40"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+        </div>
+        
+        <div className="relative z-10 text-center px-6 max-w-4xl mx-auto mt-20">
+          <h1 className="text-5xl md:text-8xl font-bold tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500">
+            Transform Body.<br />Elevate Mind.
+          </h1>
+          <p className="text-lg md:text-2xl text-zinc-400 mb-10 max-w-2xl mx-auto font-light">
+            Welcome to the Temple of Fitness. Cutting-edge equipment, certified trainers, and a community driven by greatness.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button 
+              onClick={() => setShowJoinModal(true)}
+              className="bg-white text-black px-8 py-4 rounded-full text-lg font-semibold hover:bg-zinc-200 transition-colors w-full sm:w-auto"
+            >
+              Start Your Journey
+            </button>
+            <button 
+              onClick={() => scrollTo('programs')}
+              className="bg-zinc-900/80 backdrop-blur-md text-white border border-white/10 px-8 py-4 rounded-full text-lg font-semibold hover:bg-zinc-800 transition-colors w-full sm:w-auto flex items-center justify-center"
+            >
+              Explore Programs <ChevronRight size={20} className="ml-2" />
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* --- ABOUT & OFFERINGS --- */}
+      <section id="about" className="py-24 md:py-32 px-6 max-w-7xl mx-auto">
+        <div className="text-center mb-20">
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tighter mb-4">Empowering Your Fitness.</h2>
+          <p className="text-zinc-400 max-w-2xl mx-auto text-lg">
+            At Stalwart Xanadu, we combine world-class machinery, personalized attention, and a supportive environment to help you achieve your ultimate potential.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {OFFERINGS.map((offer, idx) => (
+            <div key={idx} className="bg-zinc-900/40 border border-white/5 rounded-3xl p-8 hover:bg-zinc-900/80 transition-colors group">
+              <div className="bg-zinc-800/50 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <offer.icon size={28} className="text-white" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">{offer.title}</h3>
+              <p className="text-zinc-400 leading-relaxed text-sm">{offer.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* --- PROGRAMS / CLASSES --- */}
+      <section id="programs" className="py-24 md:py-32 bg-zinc-950 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+            <div>
+              <h2 className="text-3xl md:text-5xl font-bold tracking-tighter mb-4">Classes designed to fit.</h2>
+              <p className="text-zinc-400 text-lg">Curated sessions tailored to your lifestyle and goals.</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {CLASSES.map((cls, idx) => (
+              <div key={idx} className="group relative rounded-3xl overflow-hidden aspect-[4/5] cursor-pointer">
+                <img src={cls.img} alt={cls.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80" />
+                <div className="absolute inset-0 p-8 flex flex-col justify-end">
+                  <h3 className="text-2xl font-bold mb-2">{cls.name}</h3>
+                  <p className="text-zinc-300 text-sm mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-4 group-hover:translate-y-0">
+                    {cls.desc}
+                  </p>
+                  <div className="flex items-center text-xs font-bold uppercase tracking-wider text-white">
+                    Learn more <ArrowRight size={14} className="ml-2 group-hover:translate-x-2 transition-transform" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* --- EQUIPMENT SHOWCASE --- */}
+      <section className="py-24 md:py-32 px-6 max-w-7xl mx-auto">
+        <div className="text-center mb-20">
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tighter mb-4">Pro-Level Equipment.</h2>
+          <p className="text-zinc-400 max-w-2xl mx-auto text-lg">Engineered for performance. Experience the pinnacle of fitness technology.</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {EQUIPMENT.map((eq, idx) => (
+            <div key={idx} className="relative rounded-3xl overflow-hidden h-80 md:h-96 group">
+              <img src={eq.img} alt={eq.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-500" />
+              <div className="absolute top-0 left-0 p-8 w-full">
+                <h3 className="text-2xl md:text-3xl font-bold mb-2">{eq.name}</h3>
+                <p className="text-zinc-200 max-w-sm">{eq.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* --- SCHEDULE --- */}
+      <section id="schedule" className="py-24 md:py-32 bg-zinc-950 px-6 border-y border-white/5">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tighter mb-4">Plan Your Journey.</h2>
+            <p className="text-zinc-400 text-lg">Find the perfect class for your schedule.</p>
+          </div>
+
+          {/* Day Selector */}
+          <div className="flex overflow-x-auto pb-6 mb-8 gap-2 hide-scrollbar justify-start md:justify-center">
+            {Object.keys(SCHEDULE).map(day => (
+              <button
+                key={day}
+                onClick={() => setActiveDay(day)}
+                className={`px-6 py-3 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                  activeDay === day ? 'bg-white text-black' : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-white'
+                }`}
+              >
+                {day}
+              </button>
+            ))}
+          </div>
+
+          {/* Schedule List */}
+          <div className="bg-black border border-white/10 rounded-3xl p-4 md:p-8">
+            <div className="space-y-4">
+              {SCHEDULE[activeDay].map((slot, idx) => (
+                <div key={idx} className="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-2xl hover:bg-zinc-900/50 transition-colors border border-transparent hover:border-white/5">
+                  <div className="flex items-center gap-4 mb-3 md:mb-0">
+                    <div className="bg-zinc-900 w-12 h-12 rounded-full flex items-center justify-center">
+                      <Clock size={20} className="text-zinc-400" />
+                    </div>
+                    <div>
+                      <h4 className="text-xl font-bold">{slot.name}</h4>
+                      <p className="text-zinc-400 text-sm md:hidden">{slot.time}</p>
+                    </div>
+                  </div>
+                  <div className="hidden md:block text-zinc-400 font-medium">
+                    {slot.time}
+                  </div>
+                  <button className="text-sm font-semibold text-white bg-zinc-800 px-6 py-2 rounded-full hover:bg-zinc-700 transition-colors w-fit">
+                    View Info
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* --- TESTIMONIALS --- */}
+      <section className="py-24 md:py-32 px-6 max-w-7xl mx-auto overflow-hidden">
+        <h2 className="text-3xl md:text-5xl font-bold tracking-tighter mb-16 text-center">Hear from our members.</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {TESTIMONIALS.slice(0, 3).map((test, idx) => (
+            <div key={idx} className="bg-zinc-900/40 border border-white/5 rounded-3xl p-8 flex flex-col justify-between">
+              <p className="text-lg text-zinc-300 leading-relaxed mb-8">"{test.text}"</p>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-zinc-700 to-zinc-900 rounded-full flex items-center justify-center font-bold text-lg">
+                  {test.name.charAt(0)}
+                </div>
+                <div>
+                  <h4 className="font-bold">{test.name}</h4>
+                  <span className="text-xs text-zinc-500 uppercase tracking-wider">Member</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* --- CONTACT & FOOTER --- */}
+      <footer id="contact" className="bg-zinc-950 pt-24 pb-12 px-6 border-t border-white/5">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 mb-16">
+          
+          {/* Info Side */}
+          <div>
+            <h2 className="text-4xl md:text-6xl font-bold tracking-tighter mb-6">Get in touch.</h2>
+            <p className="text-zinc-400 text-lg mb-12 max-w-md">
+              Ready to start your transformation? Drop us a line, give us a call, or visit our facility.
+            </p>
+            
+            <div className="space-y-8">
+              <div className="flex items-start gap-4">
+                <MapPin className="text-zinc-400 mt-1" size={24} />
+                <div>
+                  <h4 className="font-bold text-lg mb-1">Location</h4>
+                  <p className="text-zinc-400 leading-relaxed">
+                    PLOT NO-134, District Center,<br />
+                    Near Bharat Petroleum Petrol Pump,<br />
+                    Chandra Shekharpur, Bhubaneswar,<br />
+                    Khordha, Odisha, 751016
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-4">
+                <Phone className="text-zinc-400 mt-1" size={24} />
+                <div>
+                  <h4 className="font-bold text-lg mb-1">Phone</h4>
+                  <p className="text-zinc-400">+91 7077671215</p>
+                  <p className="text-zinc-400">+91 8917404305</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4">
+                <Mail className="text-zinc-400 mt-1" size={24} />
+                <div>
+                  <h4 className="font-bold text-lg mb-1">Email</h4>
+                  <p className="text-zinc-400">connect@stalwartxanadu.com</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Form Side */}
+          <div className="bg-black border border-white/10 rounded-3xl p-8 md:p-12">
+            <h3 className="text-2xl font-bold mb-8">Request a Call Back</h3>
+            <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); alert('Request Submitted Successfully!'); }}>
+              <div>
+                <label className="block text-sm font-medium text-zinc-400 mb-2">Full Name</label>
+                <input 
+                  type="text" 
+                  required
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                  placeholder="Enter your name"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-zinc-400 mb-2">Mobile Number</label>
+                <input 
+                  type="tel" 
+                  pattern="[0-9]{10}"
+                  required
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                  placeholder="10-digit mobile number"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-zinc-400 mb-2">Area / Location</label>
+                <input 
+                  type="text" 
+                  required
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+                  placeholder="Your residential area"
+                />
+              </div>
+              <button type="submit" className="w-full bg-white text-black font-bold text-lg py-4 rounded-xl hover:bg-zinc-200 transition-colors mt-4">
+                Submit Request
+              </button>
+            </form>
+          </div>
+
+        </div>
+
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between pt-8 border-t border-white/10 text-zinc-500 text-sm">
+          <p>© 2026 STALWART XANADU. A Unit of Stalwart Gym.</p>
+          <div className="flex space-x-6 mt-4 md:mt-0">
+            <button className="hover:text-white transition-colors">Privacy Policy</button>
+            <button className="hover:text-white transition-colors">Terms of Service</button>
+          </div>
+        </div>
+      </footer>
+
+      {/* --- JOIN MODAL --- */}
+      {showJoinModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowJoinModal(false)} />
+          <div className="relative bg-zinc-950 border border-white/10 w-full max-w-lg rounded-3xl p-8 md:p-10 shadow-2xl animate-fade-in-up">
+            <button 
+              className="absolute top-6 right-6 text-zinc-400 hover:text-white transition-colors"
+              onClick={() => setShowJoinModal(false)}
+            >
+              <X size={24} />
+            </button>
+            
+            <h3 className="text-3xl font-bold mb-2">Join the Temple.</h3>
+            <p className="text-zinc-400 mb-8">Take the first step towards your transformation.</p>
+
+            <form className="space-y-5" onSubmit={(e) => { 
+              e.preventDefault(); 
+              alert('Appointment Booked Successfully!');
+              setShowJoinModal(false);
+            }}>
+              <div>
+                <input type="text" required placeholder="Full Name" className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4 text-white focus:ring-2 focus:ring-white/50 outline-none" />
+              </div>
+              <div>
+                <input type="email" required placeholder="Email Address" className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4 text-white focus:ring-2 focus:ring-white/50 outline-none" />
+              </div>
+              <div>
+                <input type="tel" pattern="[0-9]{10}" required placeholder="10-digit Mobile Number" className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4 text-white focus:ring-2 focus:ring-white/50 outline-none" />
+              </div>
+              <div>
+                <input type="text" required placeholder="Area/Location" className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4 text-white focus:ring-2 focus:ring-white/50 outline-none" />
+              </div>
+              <button type="submit" className="w-full bg-white text-black font-bold text-lg py-4 rounded-xl hover:bg-zinc-200 transition-colors mt-2">
+                Book Appointment
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Add some raw CSS for hiding scrollbars & basic animations natively if tailwind config isn't customized */}
+      <style dangerouslySetInnerHTML={{__html: `
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up { animation: fadeInUp 0.4s ease-out forwards; }
+      `}} />
+    </div>
+  );
+}
+
